@@ -6,15 +6,47 @@ on:
       - main
 
 jobs:
-  deploy:
+  determine-namespace:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Determine namespace from commit message
+      id: determine_namespace
+      run: |
+        COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+        if [[ $COMMIT_MESSAGE == *"[dev]"* ]]; then
+          echo "namespace=dev" >> $GITHUB_ENV
+        elif [[ $COMMIT_MESSAGE == *"[test]"* ]]; then
+          echo "namespace=test" >> $GITHUB_ENV
+        elif [[ $COMMIT_MESSAGE == *"[stage]"* ]]; then
+          echo "namespace=stage" >> $GITHUB_ENV
+        elif [[ $COMMIT_MESSAGE == *"[prod]"* ]]; then
+          echo "namespace=prod" >> $GITHUB_ENV
+        else
+          echo "namespace=unknown" >> $GITHUB_ENV
+        fi
+
+    - name: Show determined namespace
+      run: echo "Determined namespace is ${{ env.namespace }}"
+
+  deploy:
+    needs: determine-namespace
+    runs-on: ubuntu-latest
+
+    env:
+      GKE_CLUSTER_NAME: jsonplaceholder-app-gke
+      GKE_CLUSTER_ZONE: us-central1-f
+      NAMESPACE: ${{ env.namespace }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
     - name: Set up Google Cloud CLI
-      uses: google-github-actions/setup-gcloud@master
+      uses: google-github-actions/setup-gcloud@v2
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         service_account_key: ${{ secrets.GCP_SA_KEY }}
@@ -26,6 +58,9 @@ jobs:
     - name: Determine repository name
       id: repo_name
       run: echo "::set-output name=name::$(echo $GITHUB_REPOSITORY | cut -d '/' -f 2)"
+
+    - name: Set GKE Cluster Context
+      run: gcloud container clusters get-credentials ${{ env.GKE_CLUSTER_NAME }} --zone ${{ env.GKE_CLUSTER_ZONE }}
 
     - name: Build and push Docker image
       run: |
@@ -39,8 +74,8 @@ jobs:
 
     - name: Deploy to GKE using Helm
       run: |
-        helm upgrade --install ${{ steps.repo_name.outputs.name }} ./charts/${{ steps.repo_name.outputs.name }} \
-          --namespace your-namespace \
+        helm upgrade --install ${{ steps.repo_name.outputs.name }} -f ./charts/values.yaml ./charts/${{ steps.repo_name.outputs.name }} \
+        --namespace ${{ env.NAMESPACE }} \
           --set image.repository=gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ steps.repo_name.outputs.name }} \
           --set image.tag=latest \
           --set service.type=LoadBalancer
