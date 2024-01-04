@@ -70,10 +70,10 @@ jobs:
       with:
         version: 'v3.7.0'
 
-    - name: Deploy to GKE using Helm
-      run: |
-        helm upgrade --install ${{ steps.repo_name.outputs.name }} -f ./charts/values.yaml ./charts/${{ steps.repo_name.outputs.name }} \
-        --namespace ${{ env.NAMESPACE }} \
-          --set image.repository=gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ steps.repo_name.outputs.name }} \
-          --set image.tag=latest \
-          --set service.type=LoadBalancer
+    # - name: Deploy to GKE using Helm
+    #   run: |
+    #     helm upgrade --install ${{ steps.repo_name.outputs.name }} -f ./charts/values.yaml ./charts/${{ steps.repo_name.outputs.name }} \
+    #     --namespace ${{ env.NAMESPACE }} \
+    #       --set image.repository=gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ steps.repo_name.outputs.name }} \
+    #       --set image.tag=latest \
+    #       --set service.type=LoadBalancer
