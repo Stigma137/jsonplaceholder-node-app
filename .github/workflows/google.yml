@@ -49,21 +49,35 @@ jobs:
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         credentials_json: '${{ secrets.GCP_SA_KEY }}'
-
-    - name: Authenticate with Container Registry
-      run: gcloud auth configure-docker -q
-
+    
     - name: Determine repository name
       id: repo_name
       run: echo "::set-output name=name::$(echo $GITHUB_REPOSITORY | cut -d '/' -f 2)"
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+      with:
+        images: stigma137/${{ steps.repo_name.outputs.name }}
+
 
     - name: Set GKE Cluster Context
       run: gcloud container clusters get-credentials ${{ env.GKE_CLUSTER_NAME }} --zone ${{ env.GKE_CLUSTER_ZONE }}
 
     - name: Build and push Docker image
-      run: |
-        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ steps.repo_name.outputs.name }}:latest .
-        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ steps.repo_name.outputs.name }}:latest
+      uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
 
     - name: Set up Helm
       uses: azure/setup-helm@v1
