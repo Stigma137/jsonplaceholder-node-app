@@ -18,15 +18,15 @@ jobs:
       run: |
         COMMIT_MESSAGE=$(git log -1 --pretty=%B)
         if [[ $COMMIT_MESSAGE == *"[dev]"* ]]; then
-          echo "namespace=dev" >> $GITHUB_ENV
+          echo "namespace=dev"
         elif [[ $COMMIT_MESSAGE == *"[test]"* ]]; then
-          echo "namespace=test" >> $GITHUB_ENV
+          echo "namespace=test"
         elif [[ $COMMIT_MESSAGE == *"[stage]"* ]]; then
-          echo "namespace=stage" >> $GITHUB_ENV
+          echo "namespace=stage"
         elif [[ $COMMIT_MESSAGE == *"[prod]"* ]]; then
-          echo "namespace=prod" >> $GITHUB_ENV
+          echo "namespace=prod"
         else
-          echo "namespace=unknown" >> $GITHUB_ENV
+          echo "namespace=unknown"
         fi
 
     - name: Show determined namespace
