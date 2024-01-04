@@ -2,8 +2,8 @@
 replicaCount: 1
 
 image:
-  repository: "gcr.io/yjsonplaceholder-app/jsonplaceholder-node-app"
-  tag: "latest"
+  repository: "stigma137/jsonplaceholder-node-app"
+  tag: "main"
   pullPolicy: IfNotPresent
 
 service:

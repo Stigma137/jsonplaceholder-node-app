@@ -9,6 +9,9 @@ jobs:
   determine-namespace:
     runs-on: ubuntu-latest
 
+    outputs:
+      environment: ${{ steps.determine_namespace.outputs.namespace }}
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -29,6 +32,8 @@ jobs:
           echo "namespace=unknown"
         fi
 
+        echo "::set-output name=mix-test::$(cat test.log)"
+
     - name: Show determined namespace
       run: echo "Determined namespace is ${{ steps.determine_namespace.outputs.namespace }}"
 
@@ -39,6 +44,7 @@ jobs:
     env:
       GKE_CLUSTER_NAME: jsonplaceholder-app-gke
       GKE_CLUSTER_ZONE: us-central1-f
+      NAMESPACE: ${{ needs.determine-namespace.outputs.namespace }}
 
     steps:
     - name: Checkout code
@@ -84,10 +90,10 @@ jobs:
       with:
         version: 'v3.7.0'
 
-    # - name: Deploy to GKE using Helm
-    #   run: |
-    #     helm upgrade --install ${{ steps.repo_name.outputs.name }} -f ./charts/values.yaml ./charts/${{ steps.repo_name.outputs.name }} \
-    #     --namespace ${{ env.NAMESPACE }} \
-    #       --set image.repository=gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ steps.repo_name.outputs.name }} \
-    #       --set image.tag=latest \
-    #       --set service.type=LoadBalancer
+    - name: Deploy to GKE using Helm
+      run: |
+        helm upgrade --install ${{ steps.repo_name.outputs.name }} -f ./charts/values.yaml ./charts/${{ steps.repo_name.outputs.name }} \
+        --namespace ${{ env.NAMESPACE }} \
+          --set image.repository=gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ steps.repo_name.outputs.name }} \
+          --set image.tag=latest \
+          --set service.type=LoadBalancer
