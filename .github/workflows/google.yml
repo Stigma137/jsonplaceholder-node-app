@@ -51,7 +51,7 @@ jobs:
         credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
     - name: Authenticate with Container Registry
-      run: gcloud auth configure-docker
+      run: gcloud auth configure-docker -q
 
     - name: Determine repository name
       id: repo_name
