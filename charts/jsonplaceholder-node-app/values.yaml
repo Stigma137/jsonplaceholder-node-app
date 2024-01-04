@@ -1,0 +1,14 @@
+# values.yaml
+replicaCount: 1
+
+image:
+  repository: "gcr.io/yjsonplaceholder-app/jsonplaceholder-node-app"
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  name: jsonplaceholder-node-app
+  type: ClusterIP
+  port: 3000
+
+# Add other environment-specific configurations as needed
