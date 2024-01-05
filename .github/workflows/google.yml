@@ -88,12 +88,12 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: stigma137/${{ steps.repo_name.outputs.name }}:${{ env.COMMIT_SHA }}
+        tags: ${{ secrets.DOCKER_USERNAME }}/${{ steps.repo_name.outputs.name }}:${{ env.COMMIT_SHA }}
 
     - name: Clean Up Docker Hub
       run: |
-        REPO="stigma137/${{ steps.repo_name.outputs.name }}"
-        SORTED_IMAGES=$(curl -s -H "Authorization: Bearer ${{ secrets.DOCKER_HUB_TOKEN }}" "https://hub.docker.com/v2/repositories/stigma137/jsonplaceholder-node-app/tags/" | jq -r '.results | .[] | .last_updated + " " + .name' | sort -r | awk '{print $2}')
+        REPO="${{ secrets.DOCKER_USERNAME }}/${{ steps.repo_name.outputs.name }}"
+        SORTED_IMAGES=$(curl -s -H "Authorization: Bearer ${{ secrets.DOCKER_HUB_TOKEN }}" "https://hub.docker.com/v2/repositories/$REPO/tags/" | jq -r '.results | .[] | .last_updated + " " + .name' | sort -r | awk '{print $2}')
         KEEP_IMAGES=$(echo "$SORTED_IMAGES" | head -n 5)
         echo $KEEP_IMAGES
         for tag in $SORTED_IMAGES; do
@@ -110,7 +110,7 @@ jobs:
 
     - name: Replace URL Image in Chart Values
       run: |
-        REPOSITORY_URI_IMAGE="stigma137/${{ steps.repo_name.outputs.name }}"
+        REPOSITORY_URI_IMAGE="${{ secrets.DOCKER_USERNAME }}/${{ steps.repo_name.outputs.name }}"
         IMAGE_TAG="${{ env.COMMIT_SHA }}"
         sed -i "s|<URL_IMAGE>|${REPOSITORY_URI_IMAGE}|g" ./charts/${{ steps.repo_name.outputs.name }}/${{ env.NAMESPACE }}-values.yaml
         sed -i "s|<IMAGE_TAG>|${IMAGE_TAG}|g" ./charts/${{ steps.repo_name.outputs.name }}/${{ env.NAMESPACE }}-values.yaml

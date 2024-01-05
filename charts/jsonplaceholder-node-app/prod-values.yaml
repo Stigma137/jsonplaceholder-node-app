@@ -1,0 +1,44 @@
+# values.yaml
+replicaCount: 2
+
+image:
+  repository: <URL_IMAGE>
+  tag: <IMAGE_TAG>
+  pullPolicy: IfNotPresent
+
+service:
+  name: jsonplaceholder-node-app
+  port: 3000
+  type: LoadBalancer
+  targetPort: 3000
+  protocol: TCP
+
+resources: 
+  limits:
+    cpu: 400m
+    memory: 600Mi
+  requests:
+    cpu: 50m
+    memory: 256Mi
+
+livenessProbe:
+  enabled: true
+  path: /health  
+  port: 3000
+  initialDelaySeconds: 100
+  periodSeconds: 60
+  timeoutSeconds: 5
+  failureThreshold: 5
+  successThreshold: 1
+
+serviceAccount:
+  create: true
+  
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 80
+
+ingress:
+  enabled: false
