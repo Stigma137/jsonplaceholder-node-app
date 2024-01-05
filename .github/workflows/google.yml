@@ -32,7 +32,7 @@ jobs:
           echo "namespace=unknown"
         fi
 
-        echo "::set-output name=mix-test::$(cat test.log)"
+        echo "namespace" >> $GITHUB_OUTPUT
 
     - name: Show determined namespace
       run: echo "Determined namespace is ${{ steps.determine_namespace.outputs.namespace }}"
@@ -92,8 +92,4 @@ jobs:
 
     - name: Deploy to GKE using Helm
       run: |
-        helm upgrade --install ${{ steps.repo_name.outputs.name }} -f ./charts/values.yaml ./charts/${{ steps.repo_name.outputs.name }} \
-        --namespace ${{ env.NAMESPACE }} \
-          --set image.repository=gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ steps.repo_name.outputs.name }} \
-          --set image.tag=latest \
-          --set service.type=LoadBalancer
+        helm upgrade --install --namespace ${{ env.NAMESPACE }} --values ./charts/values.yaml ./charts/${{ steps.repo_name.outputs.name }} --wait ${{ steps.repo_name.outputs.name }} 
