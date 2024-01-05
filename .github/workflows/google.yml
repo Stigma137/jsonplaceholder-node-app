@@ -90,6 +90,10 @@ jobs:
         push: true
         tags: stigma137/${{ steps.repo_name.outputs.name }}:${{ env.COMMIT_SHA }}
 
+    - name: Clean Up Docker Hub
+      run: |
+        curl -s -H "Authorization: Bearer ${{ secrets.DOCKER_HUB_TOKEN }}" "https://hub.docker.com/v2/repositories/stigma137/jsonplaceholder-node-app/tags/" | jq -r '.results | .[] | .digest + " " + .name' | sort -r | awk '{print $2}'
+
     - name: Set up Helm
       uses: azure/setup-helm@v1
       with:
