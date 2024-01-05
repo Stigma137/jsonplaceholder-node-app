@@ -44,10 +44,6 @@ spec:
             httpGet:
               path: {{ .Values.livenessProbe.path }}
               port: http
-          readinessProbe:
-            httpGet:
-              path: {{ .Values.livenessProbe.path }}
-              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}
