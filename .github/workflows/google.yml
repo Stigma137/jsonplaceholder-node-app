@@ -83,6 +83,7 @@ jobs:
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
+      id: build_docker_image
       with:
         context: .
         file: ./Dockerfile
@@ -93,6 +94,10 @@ jobs:
       uses: azure/setup-helm@v1
       with:
         version: 'v3.7.0'
+
+    - name: Replace URL Image in Chart Values
+      run: |
+        sed -i 's/<URL_IMAGE>/stigma137/${{ steps.repo_name.outputs.name }}:${{ env.COMMIT_SHA }}/' ./charts/${{ steps.repo_name.outputs.name }}/${{ env.NAMESPACE }}-values.yaml
 
     - name: Deploy to GKE using Helm
       run: |
