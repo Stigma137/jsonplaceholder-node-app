@@ -5,7 +5,7 @@ const app = express();
 const port = 3000;
 
 // Define a route to fetch and display posts from JSONPlaceholder API
-app.get('/postsa', async (req, res) => {
+app.get('/postsb', async (req, res) => {
   try {
     // Make a GET request to JSONPlaceholder API
     const response = await axios.get('https://jsonplaceholder.typicode.com/posts');

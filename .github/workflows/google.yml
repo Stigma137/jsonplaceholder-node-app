@@ -92,7 +92,16 @@ jobs:
 
     - name: Clean Up Docker Hub
       run: |
-        curl -s -H "Authorization: Bearer ${{ secrets.DOCKER_HUB_TOKEN }}" "https://hub.docker.com/v2/repositories/stigma137/jsonplaceholder-node-app/tags/" | jq -r '.results | .[] | .digest + " " + .name' | sort -r | awk '{print $2}'
+        REPO="stigma137/${{ steps.repo_name.outputs.name }}"
+        SORTED_IMAGES=$(curl -s -H "Authorization: Bearer ${{ secrets.DOCKER_HUB_TOKEN }}" "https://hub.docker.com/v2/repositories/stigma137/jsonplaceholder-node-app/tags/" | jq -r '.results | .[] | .last_updated + " " + .name' | sort -r | awk '{print $2}')
+        KEEP_IMAGES=$(echo "$SORTED_IMAGES" | head -n 5)
+        echo $KEEP_IMAGES
+        for tag in $SORTED_IMAGES; do
+          if ! echo "$KEEP_IMAGES" | grep -q "$tag"; then
+            echo "Deleting image: $tag"
+            curl -X DELETE -H "Authorization: Bearer ${{ secrets.DOCKER_HUB_TOKEN }}" "https://hub.docker.com/v2/repositories/$REPO/tags/$tag/"
+          fi
+        done
 
     - name: Set up Helm
       uses: azure/setup-helm@v1
