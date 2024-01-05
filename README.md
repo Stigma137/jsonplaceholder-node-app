@@ -10,6 +10,10 @@ jsonplaceholder-node-app is a Node app that consumes the API Rest https://jsonpl
 - Kubernetes (GKE)
 - Helm
 
+## Used Branching Strategy
+
+- Trunk-based Development
+
 ## Installation locally
 
 Use the package manager [npm](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04) to install jsonplaceholder-node-app.
