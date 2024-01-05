@@ -43,6 +43,7 @@ jobs:
       GKE_CLUSTER_NAME: jsonplaceholder-app-gke
       GKE_CLUSTER_ZONE: us-central1-f
       NAMESPACE: ${{ needs.determine-namespace.outputs.namespace }}
+      COMMIT_SHA: ${{ github.sha }}
 
     steps:
     - name: Checkout code
@@ -86,7 +87,7 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: stigma137/${{ steps.repo_name.outputs.name }}:latest
+        tags: stigma137/${{ steps.repo_name.outputs.name }}:${{ env.COMMIT_SHA }}
 
     - name: Set up Helm
       uses: azure/setup-helm@v1
