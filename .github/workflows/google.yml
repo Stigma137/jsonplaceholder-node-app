@@ -97,8 +97,10 @@ jobs:
 
     - name: Replace URL Image in Chart Values
       run: |
-        REPOSITORY_URI_IMAGE="stigma137/${{ steps.repo_name.outputs.name }}:${{ env.COMMIT_SHA }}"
+        REPOSITORY_URI_IMAGE="stigma137/${{ steps.repo_name.outputs.name }}"
+        IMAGE_TAG="${{ env.COMMIT_SHA }}"
         sed -i "s|<URL_IMAGE>|${REPOSITORY_URI_IMAGE}|g" ./charts/${{ steps.repo_name.outputs.name }}/${{ env.NAMESPACE }}-values.yaml
+        sed -i "s|<IMAGE_TAG>|${IMAGE_TAG}|g" ./charts/${{ steps.repo_name.outputs.name }}/${{ env.NAMESPACE }}-values.yaml
 
     - name: Deploy to GKE using Helm
       run: |

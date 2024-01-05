@@ -3,7 +3,8 @@ replicaCount: 2
 
 image:
   repository: <URL_IMAGE>
-  pullPolicy: Always
+  tag: <IMAGE_TAG>
+  pullPolicy: IfNotPresent
 
 service:
   name: jsonplaceholder-node-app
