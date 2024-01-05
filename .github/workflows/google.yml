@@ -90,4 +90,4 @@ jobs:
 
     - name: Deploy to GKE using Helm
       run: |
-        helm upgrade --install --namespace ${{ env.NAMESPACE }} --values ./charts/${{ steps.repo_name.outputs.name }}/values.yaml --wait ${{ steps.repo_name.outputs.name }} 
+        helm upgrade --namespace ${{ env.NAMESPACE }} --install --values /charts/${{ steps.repo_name.outputs.name }}/values.yaml --wait ${{ steps.repo_name.outputs.name }} ${{ env.NAMESPACE }}/${{ steps.repo_name.outputs.name }}
