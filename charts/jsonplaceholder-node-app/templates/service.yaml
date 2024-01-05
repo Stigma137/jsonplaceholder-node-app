@@ -1,12 +1,15 @@
-# templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.service.name }}
+  name: {{ include "jsonplaceholder-node-app.fullname" . }}
+  labels:
+    {{- include "jsonplaceholder-node-app.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: 3000
-      targetPort: 3000
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: {{ .Values.service.protocol }}
+      name: {{ .Values.service.name }}
   selector:
-    app: {{ include "jsonplaceholder-node-app.name" . }}
+    {{- include "jsonplaceholder-node-app.selectorLabels" . | nindent 4 }}

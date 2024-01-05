@@ -1,23 +1,36 @@
-# templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "jsonplaceholder-node-app.fullname" . }}
   labels:
-    app: {{ include "jsonplaceholder-node-app.name" . }}
+    {{- include "jsonplaceholder-node-app.labels" . | nindent 4 }}
 spec:
+  {{- if not.Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
-      app: {{ include "jsonplaceholder-node-app.name" . }}
+      {{- include "jsonplaceholder-node-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
-        app: {{ include "jsonplaceholder-node-app.name" . }}
+        {{- include "jsonplaceholder-node-app.selectorLabels" . | nindent 8 }}
     spec:
-      containers:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default.Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 3000
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
