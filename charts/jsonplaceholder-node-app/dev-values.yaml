@@ -3,7 +3,6 @@ replicaCount: 2
 
 image:
   repository: stigma137/jsonplaceholder-node-app
-  tag: latest
   pullPolicy: Always
 
 service:
