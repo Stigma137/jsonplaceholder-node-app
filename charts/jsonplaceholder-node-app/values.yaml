@@ -4,7 +4,7 @@ replicaCount: 2
 image:
   repository: "stigma137/jsonplaceholder-node-app"
   tag: "main"
-  pullPolicy: IfNotPresent
+  pullPolicy: always
 
 service:
   name: jsonplaceholder-node-app
