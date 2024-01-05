@@ -21,6 +21,16 @@ resources:
     cpu: 50m
     memory: 256Mi
 
+livenessProbe:
+  enabled: true
+  path: /health  
+  port: 3000
+  initialDelaySeconds: 100
+  periodSeconds: 60
+  timeoutSeconds: 5
+  failureThreshold: 5
+  successThreshold: 1
+
 serviceAccount:
   create: true
   

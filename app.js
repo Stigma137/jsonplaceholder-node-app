@@ -5,7 +5,7 @@ const app = express();
 const port = 3000;
 
 // Define a route to fetch and display posts from JSONPlaceholder API
-app.get('/post', async (req, res) => {
+app.get('/posts', async (req, res) => {
   try {
     // Make a GET request to JSONPlaceholder API
     const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
@@ -21,6 +21,11 @@ app.get('/post', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 
 // Start the server
 app.listen(port, () => {
