@@ -58,7 +58,7 @@ jobs:
       id: repo_name
       run: echo "::set-output name=name::$(echo $GITHUB_REPOSITORY | cut -d '/' -f 2)"
 
-    - name: Run a test
+    - name: Install Auth Plugin
       run: |
        gcloud components list
        echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
@@ -100,11 +100,7 @@ jobs:
       with:
         version: 'v3.7.0'
 
-    - name: Install Auth Plugin
-      run: |
-        kubectl get nodes -o wide
-        #sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
-
     - name: Deploy to GKE using Helm
       run: |
+        helm list
         helm upgrade --namespace ${{ env.NAMESPACE }} --install --values /charts/${{ steps.repo_name.outputs.name }}/values.yaml --wait ${{ steps.repo_name.outputs.name }} ${{ env.NAMESPACE }}/${{ steps.repo_name.outputs.name }}
