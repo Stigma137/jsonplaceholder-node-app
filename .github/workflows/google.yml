@@ -21,18 +21,16 @@ jobs:
       run: |
         COMMIT_MESSAGE=$(git log -1 --pretty=%B)
         if [[ $COMMIT_MESSAGE == *"[dev]"* ]]; then
-          echo "namespace=dev"
+          echo "namespace=dev"  >> $GITHUB_OUTPUT
         elif [[ $COMMIT_MESSAGE == *"[test]"* ]]; then
-          echo "namespace=test"
+          echo "namespace=test"  >> $GITHUB_OUTPUT
         elif [[ $COMMIT_MESSAGE == *"[stage]"* ]]; then
-          echo "namespace=stage"
+          echo "namespace=stage"  >> $GITHUB_OUTPUT
         elif [[ $COMMIT_MESSAGE == *"[prod]"* ]]; then
-          echo "namespace=prod"
+          echo "namespace=prod"  >> $GITHUB_OUTPUT
         else
-          echo "namespace=unknown"
+          echo "namespace=unknown"  >> $GITHUB_OUTPUT
         fi
-
-        echo "namespace" >> $GITHUB_OUTPUT
 
     - name: Show determined namespace
       run: echo "Determined namespace is ${{ steps.determine_namespace.outputs.namespace }}"
