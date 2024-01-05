@@ -90,7 +90,7 @@ jobs:
 
     - name: Install Auth Plugin
       run: |
-        gcloud components install gke-gcloud-auth-plugin
+        sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
 
     - name: Deploy to GKE using Helm
       run: |
