@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      environment: ${{ steps.determine_namespace.outputs.namespace }}
+      namespace: ${{ steps.determine_namespace.outputs.namespace }}
 
     steps:
     - name: Checkout code
